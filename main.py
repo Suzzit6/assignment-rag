@@ -726,8 +726,8 @@ def create_qa_chain(vectorstore):
     )
     
     # Try to get API key from environment first, then from session state
-    api_key = "AIzaSyCiY8WwfFnZXuUEzWvBzmHl0OqpHLiUHJQ"
-    # api_key = os.environ.get("GOOGLE_API_KEY", st.session_state.api_key)
+    # api_key = "AIzaSyCiY8WwfFnZXuUEzWvBzmHl0OqpHLiUHJQ"
+    api_key = os.environ.get("GOOGLE_API_KEY", st.session_state.api_key)
     
     if not api_key:
         add_log("No Google API key found. Please set it in the settings.")
