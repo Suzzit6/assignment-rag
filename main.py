@@ -694,7 +694,6 @@ def load_vectorstore():
         
         add_log("Loading vector database from disk...")
         print("Loading vector database from disk...")
-        # Add the allow_dangerous_deserialization parameter
         vectorstore = FAISS.load_local(vectorstore_dir, embeddings, allow_dangerous_deserialization=True)
         
         add_log("Vector database loaded successfully!")
@@ -768,14 +767,12 @@ def route_query(question):
         print("Routing to RAG agent")
         return "rag"
 
-# Main application layout
 with st.container():
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
     st.title("Document Assistant")
     st.markdown("#### Ask questions about your documents and get intelligent answers")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Load the vector store and create QA chain if not already done
 if not st.session_state.vectorstore_loaded:
     with st.spinner("Loading vector store from disk..."):
         st.session_state.vector_store = load_vectorstore()
@@ -790,7 +787,6 @@ if not st.session_state.vectorstore_loaded:
         else:
             st.error("Failed to load vector store. Please make sure the 'rag_vectorstore' folder exists and contains index files.")
 
-# Create tabs
 tab1, tab2 = st.tabs(["Chatbot", "Settings"])
 
 with tab1:
@@ -799,10 +795,8 @@ with tab1:
     if not st.session_state.documents_processed:
         st.warning("System is initializing. Please wait or check Settings tab if this persists.")
     else: 
-        # Display chat history
         st.markdown('<div class="chat-container">', unsafe_allow_html=True)
         
-                # Update the welcome message to use the new class
                 
         if not st.session_state.chat_history:
             st.markdown("""
@@ -841,7 +835,6 @@ with tab1:
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Show sources if available and it's a RAG response
                     if "sources" in message and message.get("agent_used") == "RAG" and message["sources"]:
                         with st.expander("View Source Documents"):
                             for i, source in enumerate(message["sources"]):
@@ -855,7 +848,6 @@ with tab1:
                     
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Chat input
         with st.container():
             user_question = st.text_input(
                 "",
@@ -896,8 +888,6 @@ with tab2:
             add_log("API key saved")
             os.environ["GOOGLE_API_KEY"] = api_key
             
-            # If vector store is loaded but QA chain failed due to missing API key,
-            # try to recreate the QA chain
             if st.session_state.vector_store is not None and st.session_state.qa_chain is None:
                 with st.spinner("Initializing chatbot with new API key..."):
                     st.session_state.qa_chain = create_qa_chain(st.session_state.vector_store)
