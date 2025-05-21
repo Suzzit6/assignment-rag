@@ -9,7 +9,7 @@ from huggingface_hub import login
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
 from PyDictionary import PyDictionary
-from langchain_community.document_loaders import PyPDFLoader
+# from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import Docx2txtLoader  # Add this import for DOCX support
 import re
@@ -23,7 +23,6 @@ st.set_page_config(
 )
 
 
-# Find the existing CSS section and update these style elements:
 st.markdown("""
 <style>
     .main {
@@ -217,7 +216,6 @@ if 'chat_history' not in st.session_state:
 if 'vectorstore_loaded' not in st.session_state:
     st.session_state.vectorstore_loaded = False
 
-# Function to add logs with timestamps
 def add_log(message):
     timestamp = time.strftime("%H:%M:%S")
     st.session_state.logs.append(f"[{timestamp}] {message}")
@@ -228,7 +226,6 @@ def load_documents(uploaded_files):
     processed_files = []
     
     for uploaded_file in uploaded_files:
-        # Save uploaded file temporarily
         temp_dir = "temp_uploaded_files"
         os.makedirs(temp_dir, exist_ok=True)
         file_path = os.path.join(temp_dir, uploaded_file.name)
@@ -242,8 +239,8 @@ def load_documents(uploaded_files):
         if uploaded_file.name.endswith('.txt'):
             loader = TextLoader(file_path)
             processed_files.append({"name": uploaded_file.name, "type": "Text"})
-        elif uploaded_file.name.endswith('.pdf'):
-            loader = PyPDFLoader(file_path)
+        # elif uploaded_file.name.endswith('.pdf'):
+        #     loader = PyPDFLoader(file_path)
             processed_files.append({"name": uploaded_file.name, "type": "PDF"})
         elif uploaded_file.name.endswith(('.docx', '.doc')):  # Add DOCX support
             loader = Docx2txtLoader(file_path)
@@ -281,8 +278,8 @@ def load_documents_from_folder(folder_path):
         if filename.endswith('.txt'):
             loader = TextLoader(file_path)
             processed_files.append({"name": filename, "type": "Text"})
-        elif filename.endswith('.pdf'):
-            loader = PyPDFLoader(file_path)
+        # elif filename.endswith('.pdf'):
+        #     loader = PyPDFLoader(file_path)
             processed_files.append({"name": filename, "type": "PDF"})
         elif filename.endswith(('.docx', '.doc')):  # Add DOCX support
             loader = Docx2txtLoader(file_path)
@@ -332,7 +329,6 @@ def embed_and_store(chunks):
     print("Creating vector database...")
     vectorstore = FAISS.from_documents(chunks, embeddings)
     
-    # Save to disk
     vectorstore_dir = "rag_vectorstore"
     os.makedirs(vectorstore_dir, exist_ok=True)
     vectorstore.save_local(vectorstore_dir)
@@ -427,19 +423,16 @@ def calculator_agent(question):
     
     if math_expression:
         try:
-            # Make sure sympy's functions are available in the namespace
             x = symbols('x')
             namespace = {"factorial": factorial, "sqrt": sqrt, "log": log, 
                         "exp": exp, "sin": sin, "cos": cos, "tan": tan, "pi": pi}
             
             result = sympify(math_expression, locals=namespace)
             
-            # Handle complex results
             if result.is_real:
                 if result.is_integer:
                     result_str = str(int(result))
                 else:
-                    # Format floats to a reasonable precision
                     result_str = f"{float(result):.6f}".rstrip('0').rstrip('.')
             else:
                 result_str = str(result)
